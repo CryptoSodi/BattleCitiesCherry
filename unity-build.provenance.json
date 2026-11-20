@@ -2,7 +2,6 @@
   "version": "1.0.33",
   "site": "https://cherry.battlecities.com",
   "sourceRepository": "CryptoSodi/BattleCitiesUnity",
-  "sourceCommit": "6eac53f",
-  "apiCommit": "cfd79e34cce5fa4f3387a49ab418b88ccea1971b",
-  "webArchiveSha256": "dc44feeb183eaeee945e5ecaf60d8e991721028dad52f3375a0c80e7ed36e28a"
+  "sourceCommit": "6b4a513205d9a4fe236cd236d830b3dd6b91661f",
+  "webArchiveSha256": "48156c11ac65f50189c201d28e341830e4c0ef0a47d7d2f1aae8f45a7ba06a33"
 }
