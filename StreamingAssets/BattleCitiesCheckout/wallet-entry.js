@@ -1,18 +1,25 @@
-import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
+import { PublicKey, VersionedTransaction } from '@solana/web3.js';
 import { getAppReferenceKeyBytes } from '@cherrydotfun/miniapp-sdk';
+import nacl from 'tweetnacl';
+import quotedTransaction from '../../../Tools/Wallet/quoted-transaction.cjs';
 
 const CHERRY_APP_ID = 'c0dcc3df-8b13-445b-afa1-573c8c567315';
 
 function sameBytes(left, right) {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
+function walletNotReady(message) {
+  const error = new Error(message);
+  error.code = 'BC_WALLET_NOT_READY';
+  return error;
+}
 
 window.BattleCitiesCheckoutWallet = {
   async sign(encoded, wallet, label = 'Buy game item') {
     const cherry = window.BattleCitiesCherry?.insideCherry ? window.BattleCitiesCherry : null;
     const provider = cherry ? null : window.BattleCitiesPhantom?.current(wallet) || window.phantom?.solana || window.solana;
-    if (!cherry && (!provider?.isPhantom || typeof provider.signTransaction !== 'function')) throw new Error('Install or open Phantom to approve checkout.');
-    if (!cherry && provider.publicKey?.toString() !== wallet) throw new Error('Select the wallet used to sign in to Battle Cities.');
+    if (!cherry && (!provider?.isPhantom || typeof provider.signTransaction !== 'function')) throw walletNotReady('Install or open Phantom to approve checkout.');
+    if (!cherry && provider.publicKey?.toString() !== wallet) throw walletNotReady('Select the wallet used to sign in to Battle Cities.');
     const bytes = Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
     if (bytes.length <= 65 || bytes.length > 1232 || bytes[0] !== 1) throw new Error('The payment quote has an unsupported transaction format.');
 
@@ -48,15 +55,19 @@ window.BattleCitiesCheckoutWallet = {
       if ((app.paymentWallet || app.wallet.publicKey) !== wallet) throw new Error('Your Cherry payment wallet changed. Request a new price.');
     } else {
       const signed = await provider.signTransaction(transaction);
-      if (provider.publicKey?.toString() !== wallet) throw new Error('The wallet account changed. Sign in again.');
+      if (provider.publicKey?.toString() !== wallet) throw walletNotReady('The wallet account changed. Sign in again.');
       if (typeof signed?.serialize !== 'function') throw new Error('Phantom did not return a signed payment transaction.');
       signedBytes = Uint8Array.from(signed.serialize());
     }
-    if (signedBytes[0] !== 1 || !sameBytes(signedBytes.slice(65), original)) throw new Error('Phantom changed the quoted transaction. Request a fresh price and try again.');
+    if (signedBytes.length <= 65 || signedBytes.length > 1232 || signedBytes[0] !== 1
+        || (!sameBytes(signedBytes.slice(65), original)
+          && (cherry || !quotedTransaction.matchesApprovedTransaction(bytes, signedBytes))))
+      throw new Error('Phantom changed the quoted transaction. Request a fresh price and try again.');
 
     // Verify the returned wire bytes with our own parser; wallet object methods
     // must not recompile or replace the message being checked.
-    if (!Transaction.from(signedBytes).verifySignatures()) throw new Error('Phantom did not return a valid payment signature. No payment was submitted.');
+    if (!nacl.sign.detached.verify(signedBytes.slice(65), signedBytes.slice(1, 65), transaction.message.staticAccountKeys[0].toBytes()))
+      throw new Error('Phantom did not return a valid payment signature. No payment was submitted.');
     return btoa(String.fromCharCode(...signedBytes));
   }
 };

@@ -12,12 +12,13 @@
       window.battleCitiesWalletScriptsReady = new Promise((resolve) =>
         document.addEventListener("DOMContentLoaded", resolve, { once: true }));
     </script>
-    <script src="StreamingAssets/BattleCitiesCheckout/phantom.js" defer></script>
+    <script src="StreamingAssets/BattleCitiesCheckout/phantom.js?v=1.0.36" defer></script>
+    <script src="StreamingAssets/BattleCitiesCheckout/wallet.js?v=1.0.36" defer></script>
     <script src="seeker-connect.js"></script>
     <link id="battle-cities-viewport" rel="stylesheet" href="TemplateData/battle-cities-viewport.eff3bd7de97c.css">
       <link rel="preload" as="image" href="TemplateData/battle-cities-logo.6b77cc90493c.png">
       <script id="battle-cities-loading" src="TemplateData/battle-cities-loading.d53497fc0290.js" defer></script>
-  <script src="cherry.js"></script>
+  <script src="cherry.js?v=2a32eff9a895"></script>
 </head>
   <body>
     <div id="unity-container">
@@ -65,12 +66,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/6bc9a9b23e0e68066a770618e1143a02.loader.js";
+      var loaderUrl = buildUrl + "/35bd5d2217ed64c91970794faa54bfd8.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/4114530b416cf2cf7469c7f9bd6f4a90.data.unityweb",
-        frameworkUrl: buildUrl + "/ed9f258539458fd3520b532f41aecef2.framework.js.unityweb",
-        codeUrl: buildUrl + "/b2e0c5a4167e0c2f2cc286f2abf52059.wasm.unityweb",
+        dataUrl: buildUrl + "/583e428f45042c2c7810a967128338ad.data.unityweb",
+        frameworkUrl: buildUrl + "/14486f2794e70c453846082accf76104.framework.js.unityweb",
+        codeUrl: buildUrl + "/d3638f4acb3083bcd14eb124658a3852.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
 
         // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
@@ -80,7 +81,7 @@
 
         companyName: "DefaultCompany",
         productName: "Battle Cities",
-        productVersion: "1.0.33",
+        productVersion: "1.0.36",
         showBanner: unityShowBanner,
         // errorHandler: function(err, url, line) {
         //    alert("error " + err + " occurred at line " + line);
